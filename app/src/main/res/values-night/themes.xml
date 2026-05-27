@@ -1,0 +1,17 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!--
+        Sprint 6.5 — Same Dark theme as values/themes.xml.
+        Mini Netflix is always dark, so this file just mirrors the day variant.
+        Kept as a separate file because Android Studio auto-creates it and some
+        tooling expects it to exist.
+    -->
+    <style name="Base.Theme.MiniNetflix" parent="Theme.Material3.Dark.NoActionBar">
+        <item name="colorPrimary">@color/netflix_red</item>
+        <item name="colorOnPrimary">@color/netflix_text_primary</item>
+        <item name="android:windowBackground">@color/netflix_black</item>
+        <item name="android:statusBarColor">@color/netflix_black</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:navigationBarColor">@color/netflix_black</item>
+        <item name="android:windowLightNavigationBar">false</item>
+    </style>
+</resources>

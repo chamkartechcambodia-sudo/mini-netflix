@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Sprint 6.5 — Netflix-style Detail: dark theme, hero with centered play, title below,
+     meta row, big red Play Trailer button (kept from Sprint 6), synopsis, action row,
+     "More Info" section placeholder for cast/recommendations (future sprint). -->
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Hero: backdrop image + centered play overlay. Both the overlay and the big
+             Play Trailer button below open the same YouTube trailer. -->
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="240dp">
+
+            <ImageView
+                android:id="@+id/detail_image"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:background="#111111"
+                android:contentDescription="Movie backdrop"
+                tools:src="@tools:sample/backgrounds/scenic" />
+
+            <ImageButton
+                android:id="@+id/hero_play_button"
+                android:layout_width="72dp"
+                android:layout_height="72dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_play_circle"
+                android:background="@null"
+                android:contentDescription="Play trailer"
+                android:visibility="gone"
+                tools:visibility="visible" />
+        </FrameLayout>
+
+        <!-- Content (dark) -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- Title -->
+            <TextView
+                android:id="@+id/detail_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#FFFFFF"
+                android:textSize="28sp"
+                android:textStyle="bold"
+                tools:text="War Machine" />
+
+            <!-- Meta row: year · ★ rating -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:id="@+id/detail_release"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="#B0B0B0"
+                    android:textSize="15sp"
+                    tools:text="2026" />
+
+                <TextView
+                    android:id="@+id/detail_dot"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:text="•"
+                    android:textColor="#808080"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:id="@+id/detail_rating"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="#E50914"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    tools:text="★ 8.0" />
+            </LinearLayout>
+
+            <!-- Sprint 6: Play Trailer button (kept red — Netflix accent on dark theme).
+                 Hidden until a YouTube trailer is found. -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/play_trailer_button"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginTop="20dp"
+                android:text="▶ Play Trailer"
+                android:textAllCaps="false"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="#FFFFFF"
+                android:backgroundTint="#E50914"
+                android:visibility="gone"
+                tools:visibility="visible" />
+
+            <!-- Synopsis (no section header, Netflix-style) -->
+            <TextView
+                android:id="@+id/detail_overview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:textColor="#E5E5E5"
+                android:textSize="15sp"
+                android:lineSpacingExtra="4dp"
+                tools:text="An Army Ranger candidate and his team encounter an otherworldly killing machine in this action movie." />
+
+            <!-- Action row: My List · Share -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:orientation="horizontal"
+                android:gravity="center">
+
+                <LinearLayout
+                    android:id="@+id/my_list_button"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:padding="12dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="?android:attr/selectableItemBackground">
+
+                    <ImageView
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:src="@drawable/ic_add"
+                        android:contentDescription="Add to My List" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:text="My List"
+                        android:textColor="#FFFFFF"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/share_button"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:padding="12dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="?android:attr/selectableItemBackground">
+
+                    <ImageView
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:src="@drawable/ic_share"
+                        android:contentDescription="Share" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:text="Share"
+                        android:textColor="#FFFFFF"
+                        android:textSize="12sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Divider + "MORE INFO" placeholder for cast/recommendations (Sprint 11). -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="24dp"
+                android:background="#333333" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="MORE INFO"
+                android:textColor="#808080"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.08" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:text="Cast, runtime and recommendations will land in a future sprint."
+                android:textColor="#808080"
+                android:textSize="13sp" />
+
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

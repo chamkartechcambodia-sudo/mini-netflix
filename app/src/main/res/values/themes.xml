@@ -1,0 +1,25 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!--
+        Sprint 6.5 — Mini Netflix is ALWAYS dark, like the real Netflix app.
+        We don't inherit Material3.DayNight (which would flip with the system) — we lock
+        the parent to Material3.Dark so light-mode phones still see the Netflix look.
+    -->
+    <style name="Base.Theme.MiniNetflix" parent="Theme.Material3.Dark.NoActionBar">
+        <!-- Netflix red as the brand accent (buttons, ★ rating, etc.) -->
+        <item name="colorPrimary">@color/netflix_red</item>
+        <item name="colorOnPrimary">@color/netflix_text_primary</item>
+
+        <!-- Black window background so any screen without an explicit bg still looks Netflix -->
+        <item name="android:windowBackground">@color/netflix_black</item>
+
+        <!-- Status bar matches the app: dark bar with white icons -->
+        <item name="android:statusBarColor">@color/netflix_black</item>
+        <item name="android:windowLightStatusBar">false</item>
+
+        <!-- Navigation bar (3-button or gesture pill) matches too -->
+        <item name="android:navigationBarColor">@color/netflix_black</item>
+        <item name="android:windowLightNavigationBar">false</item>
+    </style>
+
+    <style name="Theme.MiniNetflix" parent="Base.Theme.MiniNetflix" />
+</resources>
