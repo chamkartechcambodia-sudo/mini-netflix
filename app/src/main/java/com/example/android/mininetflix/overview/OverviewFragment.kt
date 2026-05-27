@@ -69,6 +69,13 @@ class OverviewFragment : Fragment() {
             }
         }
 
+        // Sprint 8 — search icon on the hero opens the Search screen.
+        binding.searchButton.setOnClickListener {
+            findNavController().navigate(
+                OverviewFragmentDirections.actionOverviewFragmentToSearchFragment()
+            )
+        }
+
         // Status: show spinner / error icon; hide the scroll content while loading or on error.
         viewModel.statusMessage.observe(viewLifecycleOwner) { msg ->
             binding.statusText.text = msg

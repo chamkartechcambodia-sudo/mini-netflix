@@ -59,6 +59,16 @@ interface TmdbApiService {
         @Query("api_key") apiKey: String,
         @Query("language") language: String = "en-US"
     ): VideoResponse
+
+    // Sprint 8 — full-text search across TMDB movies.
+    @GET("search/movie")
+    suspend fun searchMovies(
+        @Query("api_key") apiKey: String,
+        @Query("query") query: String,
+        @Query("language") language: String = "en-US",
+        @Query("page") page: Int = 1,
+        @Query("include_adult") includeAdult: Boolean = false
+    ): MovieResponse
 }
 
 // A single shared instance of the service (created the first time it is used).
