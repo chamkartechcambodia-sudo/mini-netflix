@@ -4,6 +4,7 @@ import java.io.FileInputStream
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.navigation.safeargs)   // generates SafeArgs Directions/Args classes
+    alias(libs.plugins.ksp)                   // Sprint 9 — annotation processing for Room
     // Kotlin is built into AGP 9.0 (no separate kotlin-android plugin needed).
 }
 
@@ -85,6 +86,11 @@ dependencies {
     // Navigation (the SafeArgs plugin is applied later, in Phase 5)
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
+
+    // Sprint 9 — Room (local database for the "My List" favorites)
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    ksp(libs.androidx.room.compiler)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

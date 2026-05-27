@@ -9,6 +9,7 @@ import com.example.android.mininetflix.BuildConfig
 import com.example.android.mininetflix.network.Movie
 import com.example.android.mininetflix.network.TmdbApi
 import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
 // The three states a network request can be in.
@@ -57,27 +58,32 @@ class OverviewViewModel : ViewModel() {
             try {
                 val key = BuildConfig.TMDB_API_KEY
 
-                // Fire all four requests at once with `async`; they run in parallel.
-                // Compared to calling them sequentially (one after another), this finishes
-                // in roughly the time of the SLOWEST single request, not the sum of all four.
-                val popularDeferred    = async { TmdbApi.retrofitService.getPopular(key) }
-                val topRatedDeferred   = async { TmdbApi.retrofitService.getTopRated(key) }
-                val nowPlayingDeferred = async { TmdbApi.retrofitService.getNowPlaying(key) }
-                val upcomingDeferred   = async { TmdbApi.retrofitService.getUpcoming(key) }
+                // Wrap the parallel `async` calls in `coroutineScope { }`.
+                //
+                // Without this wrapper, if any one async child fails (e.g. offline →
+                // IOException), the failure propagates straight up to `viewModelScope.launch`'s
+                // Job — even though our try/catch catches the rethrown IOException, the
+                // parent Job is left in a "failed" state and the uncaught exception handler
+                // still fires → APP CRASHES when offline. This is a classic Kotlin coroutines
+                // footgun. `coroutineScope { }` CONTAINS the exception inside its own scope:
+                // catch handles it, parent launch stays healthy, no crash.
+                coroutineScope {
+                    val popularDeferred    = async { TmdbApi.retrofitService.getPopular(key) }
+                    val topRatedDeferred   = async { TmdbApi.retrofitService.getTopRated(key) }
+                    val nowPlayingDeferred = async { TmdbApi.retrofitService.getNowPlaying(key) }
+                    val upcomingDeferred   = async { TmdbApi.retrofitService.getUpcoming(key) }
 
-                // Now wait for each result. The order of .await() calls doesn't matter —
-                // we wait once for whichever finishes last.
-                val popular    = popularDeferred.await().results
-                val topRated   = topRatedDeferred.await().results
-                val nowPlaying = nowPlayingDeferred.await().results
-                val upcoming   = upcomingDeferred.await().results
+                    val popular    = popularDeferred.await().results
+                    val topRated   = topRatedDeferred.await().results
+                    val nowPlaying = nowPlayingDeferred.await().results
+                    val upcoming   = upcomingDeferred.await().results
 
-                _popular.value    = popular
-                _topRated.value   = topRated
-                _nowPlaying.value = nowPlaying
-                _upcoming.value   = upcoming
-                _featured.value   = popular.firstOrNull()
-
+                    _popular.value    = popular
+                    _topRated.value   = topRated
+                    _nowPlaying.value = nowPlaying
+                    _upcoming.value   = upcoming
+                    _featured.value   = popular.firstOrNull()
+                }
                 _status.value = TmdbApiStatus.DONE
             } catch (e: Exception) {
                 _popular.value    = emptyList()

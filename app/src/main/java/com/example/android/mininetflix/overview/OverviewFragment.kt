@@ -76,6 +76,13 @@ class OverviewFragment : Fragment() {
             )
         }
 
+        // Sprint 9 — My List icon on the hero opens the My List screen.
+        binding.mylistButton.setOnClickListener {
+            findNavController().navigate(
+                OverviewFragmentDirections.actionOverviewFragmentToMyListFragment()
+            )
+        }
+
         // Status: show spinner / error icon; hide the scroll content while loading or on error.
         viewModel.statusMessage.observe(viewLifecycleOwner) { msg ->
             binding.statusText.text = msg

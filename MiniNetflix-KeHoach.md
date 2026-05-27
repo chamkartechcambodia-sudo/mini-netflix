@@ -170,15 +170,22 @@ mininetflix/
 - **Action row**: ❤ **My List** (placeholder Toast, Sprint 9 wire vào Room) · ↗ **Share** (`Intent.ACTION_SEND` + `createChooser`, hoạt động ngay).
 - Divider + **"MORE INFO" placeholder** cho cast + recommendations (Sprint 11).
 
-### Màn 3 — Search (Sprint 8)
-- `SearchView` trên toolbar (hoặc top bar).
-- Debounce 300ms trước khi gọi API.
-- Empty state khi chưa gõ; loading khi đang search; "Không tìm thấy" khi rỗng.
+### Màn 3 — Search (Sprint 8 ✅)
+- Vào từ icon kính lúp top-right hero của Home.
+- `EditText` 56dp trên cùng với hint "Search movies…" + `imeOptions=actionSearch`.
+- **Debounce 300ms** trước khi gọi API qua pattern `searchJob?.cancel() + delay(300)` trong `viewModelScope.launch` (KHÔNG dùng Flow — đơn giản hơn cho beginner).
+- `doOnTextChanged` KTX extension thay TextWatcher.
+- **3-col grid** kết quả tái dùng `MoviePosterAdapter` + `grid_view_item.xml` (1 adapter class giờ phục vụ 5 chỗ: 4 hàng Home + grid Search).
+- 3 status state: "Type to search movies." (empty input) · "Searching…" + spinner đỏ (loading) · "No movies match \"X\"." (no result) · "⚠ Couldn't search." (error).
+- Tap result → DetailFragment qua action mới `action_searchFragment_to_detailFragment`.
 
-### Màn 4 — My List (Sprint 9)
-- Lưới giống Home grid (RecyclerView `GridLayoutManager` 2 cột).
-- Đọc từ Room qua `LiveData<List<FavoriteMovie>>`.
-- Empty state "Chưa có phim nào — hãy thả ❤ ở màn Detail".
+### Màn 4 — My List (Sprint 9 ✅)
+- Vào từ icon ♥ top-right hero của Home (bên trái 🔍 search).
+- **3-col grid** RecyclerView `GridLayoutManager` (giống Search) tái dùng `MoviePosterAdapter`.
+- Đọc từ Room qua `LiveData<List<FavoriteMovie>>.map { toMovie() }` — reactive: insert/delete bất kỳ chỗ nào, screen tự update.
+- **Empty state**: heart mờ 0.4 alpha + "Your list is empty" bold + hint "Tap the heart on a movie's Detail screen to save it here."
+- Tap result → DetailFragment qua action `action_myListFragment_to_detailFragment`.
+- **Heart toggle trên Detail:** outline trắng = chưa save · filled đỏ Netflix = đã save. Click toggle, state survive app restart + device reboot.
 
 ---
 
@@ -196,8 +203,8 @@ mininetflix/
 | 5 | Detail Screen | ✅ | Navigation + SafeArgs + hero backdrop + scrim + meta row + OVERVIEW (Netflix-style) | — | Tap poster → màn Detail đầy đủ |
 | **6** | **Play Trailer + Netflix Detail Polish + Git/Wireframe Kickoff** | ✅ done | **Trailer:** `Video`/`VideoResponse` + `getMovieVideos(id)` + nút ▶ Play Trailer + hero play overlay (1 listener cho 2 view) + `Intent.ACTION_VIEW` → YouTube. **Polish:** force-dark theme app-wide (Material3.Dark + Netflix palette) + 3 vector drawables + redesign `fragment_detail.xml` (hero + meta + chips + MORE INFO placeholder) + Share (`Intent.ACTION_SEND` + createChooser) + My List Toast placeholder. **Bài học workshop:** thử embedded YouTube player → embed bị studio chặn → revert về Intent. | 🟢 **Open repo + first PR + wireframe** (mini-lesson Git 20-25') + **design-from-reference** (vẽ wireframe Detail từ Netflix screenshots) | Repo GitHub có lịch sử commit + PR `feat: play trailer and Netflix-style detail polish` merge + ảnh wireframe + before/after screenshot |
 | 7 | **Netflix-style Home** | ✅ done | Hero card 280dp (backdrop + scrim + title overlay) + 4 hàng ngang scrolling (Popular/Top Rated/Now Playing/Upcoming) + 3 endpoint mới (`getTopRated`/`getNowPlaying`/`getUpcoming`) + **`async { … } / .await()` × 4** song song trong `viewModelScope` (~4× nhanh hơn tuần tự) + tái dùng `MoviePosterAdapter` (4 instance, 1 class) + `grid_view_item` dùng `ShapeableImageView` bo góc 8dp + `NestedScrollView` outer + status overlay sibling | **Pair code review** (≥3 review comment theo format 👀 Observation → ❓ Question → 💡 Suggestion) | PR có ≥3 review comment được giải quyết (sửa hoặc giải thích) + commit `refactor:` xử lý comment |
-| 8 | Search | planned | `search/movie` + SearchView + debounce 300ms + empty/loading/no-result states | **Wireframe-first**: Figma → PR description | PR có Figma link + GIF demo |
-| 9 | My List (Room) | planned | `FavoriteMovie` entity + DAO + AppDatabase + icon ❤ toggle trên Detail + màn My List | **GitHub Issues**: mở 2–3 issue/sprint, đóng bằng PR `Fixes #N` + viết **ADR** "vì sao Room" | 3 issue đóng + ADR `docs/adr/001-room-vs-prefs.md` |
+| 8 | **Search** | ✅ done | `searchMovies` endpoint + `SearchFragment` + `SearchViewModel` debounce 300ms qua **Job cancellation pattern** (`searchJob?.cancel() + delay(300)`) + `doOnTextChanged` KTX + 3-col grid tái dùng `MoviePosterAdapter` + search icon trên hero Home + 2 nav action mới. **Bài học workshop:** AndroidX Lifecycle 2.8+ `LiveData.map` chạy eager tại construction → init order matters (`_lastQuery` phải declare TRƯỚC `statusMessage`). | **Figma wireframe-first** (chính thức, không còn giấy) + peer review tiếp tục (rotate partner) | PR có Figma link + GIF demo debounce (gõ "marvel" → 1 request không phải 6) + ≥3 peer review comment đã resolve |
+| 9 | **My List (Room)** | ✅ done | Room entity `FavoriteMovie` + DAO (4 methods: `observeAll LiveData` reactive + `exists/insert/delete suspend` one-shot) + `AppDatabase` singleton + KSP plugin + `MyListViewModel` (AndroidViewModel) + `MyListFragment` 3-col grid (tái dùng `MoviePosterAdapter` — giờ phục vụ **6 chỗ**) + empty state + heart toggle trên Detail (`ic_heart_outline ↔ ic_heart_filled` đỏ) + nav từ Home (icon ♥ bên trái 🔍). **Bài học workshop:** AGP 9 + KSP 2.1.x cần `android.disallowKotlinSourceSets=false` trong gradle.properties (AGP tự đề xuất escape hatch trong error message — đọc kỹ message). | **GitHub Issues** (mở 2 issue trước sprint, đóng tự động qua `Fixes #N`/`Closes #N`/`Resolves #N` trong commit/PR) + **ADR đầu tiên** (`docs/adr/001-room-vs-sharedprefs.md` theo format Context → Options → Decision → Consequences) | 2 issue auto-closed + ADR commit + PR merge có ≥3 peer review comment + app kill-restart vẫn nhớ favorites |
 | 10 *(capstone)* | Release + Polish | optional | Dark mode toàn app + a11y (contentDescription) + signed APK + ProGuard | **Semver + CHANGELOG + README chuẩn recruiter** | APK ký số cài máy thật + tag `v1.0.0` + README có badges/screenshots |
 
 ---
@@ -392,6 +399,9 @@ viewModelScope.launch {
 5. **Navigation phải ≥ 2.9.6** trên AGP 9 — bản cũ hơn (2.8.x) lỗi `safeargs plugin must be used with android plugin` khi Sync. Project đang pin `navigation = "2.9.8"`.
 6. **`FragmentContainerView` KHÔNG được làm layout root** — View Binding parser bị NPE `Cannot read field "elmName" because "root" is null`. **Phải bọc trong layout cha** (FrameLayout / ConstraintLayout). Đã sửa `activity_main.xml`.
 7. **CLI build sandbox không tải được artifact mới** — chỉ build được khi user đã Sync trong Android Studio. Sau Sync, có thể chạy `gradlew :app:mergeDebugResources --offline` từ CLI để verify nhanh.
+8. **AndroidX Lifecycle 2.8+ `LiveData.map` chạy EAGER:** khác bản cũ, từ 2.8 nếu source đã có value (vd `MutableLiveData(initial)` hoặc value đã set), `source.map { transform }` chạy `transform` **NGAY tại lúc gọi `.map()`** — không phải lazy. Property nào mà transform closure đọc PHẢI được khai báo TRƯỚC `.map(...)` — nếu không, JVM field còn null → mọi non-null op (`.isBlank()`, `!!`,...) crash với `Parameter specified as non-null is null`. Hit ở `SearchViewModel` Sprint 8 — fix bằng cách dời `_lastQuery` declare lên trước `statusMessage`. Bài học sư phạm: "init order matters in Kotlin" — Kotlin null safety chỉ kiểm compile time, không thay đổi memory.
+9. **KSP 2.1.x + AGP 9 built-in Kotlin cần `android.disallowKotlinSourceSets=false`:** KSP plugin (cần cho Room compiler) vẫn dùng API cũ `kotlin.sourceSets` để đăng ký generated sources — AGP 9 bình thường cấm. Sync sẽ crash với message `Using kotlin.sourceSets DSL to add Kotlin sources is not allowed with built-in Kotlin. ... To suppress this error, set android.disallowKotlinSourceSets=false`. **AGP TỰ ĐỀ XUẤT** escape hatch ngay trong error message — đó là opt-in chính thức, không phải hack. Thêm 1 dòng vào `gradle.properties`. Hit Sprint 9 khi add Room (KSP 2.1.10-1.0.31). Bài học sư phạm: **đọc error message CẨN THẬN** — Gradle/AGP/Kotlin error thường có actionable fix gần cuối, đừng chỉ đọc dòng đầu mà hoảng. Bỏ workaround khi KSP migrate sang `android.sourceSets` (release tương lai).
+10. **`async { }` × N trong `viewModelScope.launch` BẮT BUỘC bọc `coroutineScope { }`** — nếu không, app **crash khi offline**. Lý do: 1 async child throw IOException → exception lan tới parent launch Job → `try/catch` BẮT được rethrow NHƯNG parent Job vẫn fail → uncaught exception handler fire → crash. Symptom: app chạy bình thường ONLINE, chỉ crash khi tắt internet. Hit Sprint 7 Netflix Home (4 endpoint song song) — user phát hiện ở Sprint 9 khi test offline. Fix: wrap nhóm `async { } ; .await()` vào `coroutineScope { … }` BÊN TRONG `try`. coroutineScope contain exception trong scope đó → catch handle sạch → parent launch không bị ảnh hưởng. Bài học sư phạm: **structured concurrency** — mỗi nhóm async/await muốn fail safe phải nằm trong scope con riêng, không để fail lan up lung tung.
 
 ### Khác
 - **API key** dùng chung cả lớp; nhắc giấu qua `local.properties`.
@@ -435,4 +445,4 @@ Khác biệt lớn so với Mars: thêm **Netflix-style multi-row Home** (Sprint
 
 ---
 
-*Cập nhật lần cuối: 2026-05-27 — Sprint 7 ship xong (Netflix-style Home: 4 hàng async song song + hero + ShapeableImageView bo góc + Peer Code Review introduced); Sprint 6 ship xong (trailer + Netflix detail polish + force-dark theme); bài học workshop về embedded player; pedagogy shift sang "engineer-who-ships-products" + roadmap 10-sprint + gotchas AGP 9.*
+*Cập nhật lần cuối: 2026-05-27 — Sprint 9 ship xong (My List + Room + KSP + GitHub Issues `Fixes #N` + ADR đầu tiên + bài học bug AGP9 sourceSets); Sprint 8 ship xong (Search debounce + Figma + bug init order); Sprint 7 ship xong (Netflix Home + async × 4 + Peer Review); Sprint 6 ship xong (trailer + Netflix polish + force-dark + workshop embedded player); pedagogy shift sang "engineer-who-ships-products" + roadmap 10-sprint + 9 gotchas đã document.*

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Sprint 10 — back navigation: previous fragment slides back in from the left. -->
+<translate xmlns:android="http://schemas.android.com/apk/res/android"
+    android:fromXDelta="-100%p"
+    android:toXDelta="0"
+    android:interpolator="@android:interpolator/decelerate_quad"
+    android:duration="220" />

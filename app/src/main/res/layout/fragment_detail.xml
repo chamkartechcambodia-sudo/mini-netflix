@@ -140,11 +140,13 @@
                     android:focusable="true"
                     android:background="?android:attr/selectableItemBackground">
 
+                    <!-- Sprint 9: heart icon — outline when not saved, filled red when saved. -->
                     <ImageView
+                        android:id="@+id/my_list_icon"
                         android:layout_width="28dp"
                         android:layout_height="28dp"
-                        android:src="@drawable/ic_add"
-                        android:contentDescription="Add to My List" />
+                        android:src="@drawable/ic_heart_outline"
+                        android:contentDescription="Toggle My List" />
 
                     <TextView
                         android:layout_width="wrap_content"

@@ -5,13 +5,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
+import com.example.android.mininetflix.R
 import com.example.android.mininetflix.databinding.FragmentDetailBinding
+import com.example.android.mininetflix.mylist.data.AppDatabase
 
 class DetailFragment : Fragment() {
 
@@ -80,9 +81,25 @@ class DetailFragment : Fragment() {
             startActivity(Intent.createChooser(sendIntent, "Share movie via"))
         }
 
-        // Sprint 6.5 — My List placeholder; real save-to-Room arrives in Sprint 9.
+        // Sprint 9 — My List heart toggle, backed by Room.
+        val dao = AppDatabase.getInstance(requireContext()).favoriteDao()
+        viewModel.checkFavorite(dao, movie.id)
+        viewModel.isFavorite.observe(viewLifecycleOwner) { isFav ->
+            val iconRes = if (isFav) R.drawable.ic_heart_filled else R.drawable.ic_heart_outline
+            binding.myListIcon.setImageResource(iconRes)
+        }
         binding.myListButton.setOnClickListener {
-            Toast.makeText(requireContext(), "My List coming in Sprint 9", Toast.LENGTH_SHORT).show()
+            // Sprint 10 — bounce the heart for tactile feedback (scale up then back).
+            binding.myListIcon.animate()
+                .scaleX(1.3f).scaleY(1.3f)
+                .setDuration(100)
+                .withEndAction {
+                    binding.myListIcon.animate()
+                        .scaleX(1f).scaleY(1f)
+                        .setDuration(100)
+                        .start()
+                }.start()
+            viewModel.toggleFavorite(dao, movie)
         }
 
         return binding.root

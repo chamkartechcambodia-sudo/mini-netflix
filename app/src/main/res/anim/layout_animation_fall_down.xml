@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Sprint 10 — wrap for any RecyclerView: applies item_fade_in to each child in
+     turn, staggered by 10% of item duration so the row "cascades" in. -->
+<layoutAnimation xmlns:android="http://schemas.android.com/apk/res/android"
+    android:delay="10%"
+    android:animationOrder="normal"
+    android:animation="@anim/item_fade_in" />
