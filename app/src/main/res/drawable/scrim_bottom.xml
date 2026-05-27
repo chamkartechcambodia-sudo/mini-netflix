@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- A top-to-bottom dark gradient drawn over the backdrop so white text stays readable. -->
+<!-- Sprint 7 — gradient overlay for the hero card: dark at the bottom (so the
+     overlaid title is readable on bright backdrops), fading to transparent at the top. -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
     <gradient
         android:angle="90"
-        android:startColor="#CC000000"
-        android:centerColor="#40000000"
+        android:startColor="#E6000000"
+        android:centerColor="#66000000"
         android:endColor="#00000000" />
 </shape>

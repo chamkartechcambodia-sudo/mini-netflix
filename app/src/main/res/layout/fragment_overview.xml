@@ -1,45 +1,162 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<!-- Sprint 7 — Netflix-style Home: hero card + 4 horizontal-scrolling rows.
+     Root is a FrameLayout so the status overlay (spinner / error) can sit on top
+     of the scrolling content. -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/overview_root"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".overview.OverviewFragment">
+    android:layout_height="match_parent">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/photos_grid"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:padding="6dp"
-        android:clipToPadding="false"
-        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-        app:spanCount="2"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        tools:listitem="@layout/grid_view_item" />
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scroll_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- HERO — backdrop of the featured movie + scrim + title overlaid. Tap → Detail. -->
+            <FrameLayout
+                android:id="@+id/hero_container"
+                android:layout_width="match_parent"
+                android:layout_height="280dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?android:attr/selectableItemBackground">
+
+                <ImageView
+                    android:id="@+id/hero_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:background="#111111"
+                    android:contentDescription="Featured movie backdrop"
+                    tools:src="@tools:sample/backgrounds/scenic" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/scrim_bottom" />
+
+                <TextView
+                    android:id="@+id/hero_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:padding="20dp"
+                    android:maxLines="2"
+                    android:ellipsize="end"
+                    android:textColor="#FFFFFF"
+                    android:textSize="30sp"
+                    android:textStyle="bold"
+                    tools:text="War Machine" />
+            </FrameLayout>
+
+            <!-- ROW 1 — Popular -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="8dp"
+                android:text="Popular"
+                android:textColor="#FFFFFF"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/popular_row"
+                android:layout_width="match_parent"
+                android:layout_height="180dp"
+                android:paddingStart="16dp"
+                android:paddingEnd="8dp"
+                android:clipToPadding="false"
+                tools:listitem="@layout/grid_view_item" />
+
+            <!-- ROW 2 — Top Rated -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="8dp"
+                android:text="Top Rated"
+                android:textColor="#FFFFFF"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/top_rated_row"
+                android:layout_width="match_parent"
+                android:layout_height="180dp"
+                android:paddingStart="16dp"
+                android:paddingEnd="8dp"
+                android:clipToPadding="false"
+                tools:listitem="@layout/grid_view_item" />
+
+            <!-- ROW 3 — Now Playing -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="8dp"
+                android:text="Now Playing"
+                android:textColor="#FFFFFF"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/now_playing_row"
+                android:layout_width="match_parent"
+                android:layout_height="180dp"
+                android:paddingStart="16dp"
+                android:paddingEnd="8dp"
+                android:clipToPadding="false"
+                tools:listitem="@layout/grid_view_item" />
+
+            <!-- ROW 4 — Upcoming -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="8dp"
+                android:text="Upcoming"
+                android:textColor="#FFFFFF"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/upcoming_row"
+                android:layout_width="match_parent"
+                android:layout_height="180dp"
+                android:layout_marginBottom="24dp"
+                android:paddingStart="16dp"
+                android:paddingEnd="8dp"
+                android:clipToPadding="false"
+                tools:listitem="@layout/grid_view_item" />
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- Status overlay (LOADING / ERROR) — sits on top of the scroll container -->
     <LinearLayout
         android:id="@+id/status_container"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:orientation="vertical"
-        android:gravity="center"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        android:gravity="center">
 
         <ProgressBar
             android:id="@+id/loading_spinner"
             style="?android:attr/progressBarStyleLarge"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="gone"
-            tools:visibility="visible" />
+            android:indeterminateTint="#E50914"
+            android:visibility="gone" />
 
         <ImageView
             android:id="@+id/error_image"
@@ -55,9 +172,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:gravity="center"
-            android:textSize="18sp"
-            tools:text="Loading movies…" />
-
+            android:textColor="#FFFFFF"
+            android:textSize="16sp" />
     </LinearLayout>
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+</FrameLayout>

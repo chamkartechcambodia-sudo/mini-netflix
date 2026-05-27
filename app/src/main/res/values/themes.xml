@@ -22,4 +22,10 @@
     </style>
 
     <style name="Theme.MiniNetflix" parent="Base.Theme.MiniNetflix" />
+
+    <!-- Sprint 7 — Netflix-style rounded poster corners (used by ShapeableImageView in grid_view_item). -->
+    <style name="ShapeAppearance.MiniNetflix.PosterCard" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">8dp</item>
+    </style>
 </resources>

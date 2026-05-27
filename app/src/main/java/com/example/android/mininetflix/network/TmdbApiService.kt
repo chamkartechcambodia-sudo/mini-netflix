@@ -29,6 +29,28 @@ interface TmdbApiService {
         @Query("page") page: Int = 1
     ): MovieResponse
 
+    // Sprint 7 — the other three list endpoints that feed the Netflix-style Home rows.
+    @GET("movie/top_rated")
+    suspend fun getTopRated(
+        @Query("api_key") apiKey: String,
+        @Query("language") language: String = "en-US",
+        @Query("page") page: Int = 1
+    ): MovieResponse
+
+    @GET("movie/now_playing")
+    suspend fun getNowPlaying(
+        @Query("api_key") apiKey: String,
+        @Query("language") language: String = "en-US",
+        @Query("page") page: Int = 1
+    ): MovieResponse
+
+    @GET("movie/upcoming")
+    suspend fun getUpcoming(
+        @Query("api_key") apiKey: String,
+        @Query("language") language: String = "en-US",
+        @Query("page") page: Int = 1
+    ): MovieResponse
+
     // Sprint 6 — fetch videos for one movie. DetailFragment picks the YouTube
     // trailer key out of the result and opens it via Intent.
     @GET("movie/{movie_id}/videos")

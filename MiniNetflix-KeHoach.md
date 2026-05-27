@@ -151,19 +151,24 @@ mininetflix/
 
 ## 6. Các màn hình & tính năng
 
-### Màn 1 — Home (Sprint 7: Netflix-style)
-- **Hero card** trên cùng: backdrop của phim phổ biến #1 + tiêu đề overlay + tap → Detail.
-- **4 hàng ngang** có nhãn (white bold): Popular · Top Rated · Now Playing · Upcoming.
-- Mỗi hàng = `RecyclerView` ngang dùng `MoviePosterAdapter` (tái dùng).
-- **Dark theme**: nền đen, accent đỏ Netflix `#E50914`.
-- Kết cấu: `NestedScrollView` chứa hero + 4 RecyclerView ngang (đơn giản cho SV; gợi mở nested-RecyclerView như "real-world upgrade").
+### Màn 1 — Home (Sprint 7 ✅)
+- **Hero card** 280dp trên cùng: backdrop của phim Popular #1 + gradient scrim + tiêu đề overlay (28sp+ bold trắng, padding 20dp) + tap → DetailFragment.
+- **4 hàng ngang scrolling** có nhãn (white bold 18sp): Popular · Top Rated · Now Playing · Upcoming.
+- Mỗi hàng = `RecyclerView` ngang 180dp + `LinearLayoutManager.HORIZONTAL` (set trong Kotlin) dùng `MoviePosterAdapter` (**4 instance — tái dùng 1 class adapter**, không tạo PopularAdapter/TopRatedAdapter riêng).
+- **Poster card**: 120×180dp `com.google.android.material.imageview.ShapeableImageView` bo góc **8dp** (Netflix-style) qua style `ShapeAppearance.MiniNetflix.PosterCard`.
+- **Dark theme** (inherit từ Sprint 6 force-dark): nền đen, accent đỏ Netflix.
+- Kết cấu root: `FrameLayout` chứa (a) `NestedScrollView` với hero + 4 row sections, (b) status overlay sibling che giữa màn lúc LOADING/ERROR (ẩn scroll content để tránh hero rỗng flash).
+- **Engineering pattern**: `OverviewViewModel` fetch 4 endpoint song song qua `async { … }` × 4 + `.await()` × 4 → tổng thời gian ≈ request lâu nhất, KHÔNG phải tổng cộng. Featured movie cho hero = `popular.firstOrNull()` (không tốn endpoint riêng).
 
-### Màn 2 — Detail (Sprint 5 ✅ + Sprint 6 mở rộng)
-- Hero backdrop + gradient scrim + tiêu đề overlaid.
-- Meta row: ★ rating đỏ · năm phát hành.
-- Section OVERVIEW + mô tả.
-- **Sprint 6**: thêm nút ▶ **Play Trailer** → Intent mở YouTube.
-- **Sprint 9**: thêm icon ❤ Toggle My List.
+### Màn 2 — Detail (Sprint 5 ✅ + Sprint 6 polish ✅)
+- **Dark theme toàn app** (đen — Netflix brand, không cho hệ thống đổi).
+- **Hero**: backdrop full-bleed + **icon ▶ Play tròn trắng ở giữa** (KHÔNG còn title overlay, KHÔNG scrim).
+- **Title bold trắng** DƯỚI hero (28sp).
+- Meta row: năm · ★ rating đỏ.
+- **Big red ▶ Play Trailer button** — cả nút và hero play đều mở YouTube qua `Intent.ACTION_VIEW` (1 listener share cho 2 view).
+- Synopsis trắng-mờ trên nền đen (không có header "OVERVIEW" nữa).
+- **Action row**: ❤ **My List** (placeholder Toast, Sprint 9 wire vào Room) · ↗ **Share** (`Intent.ACTION_SEND` + `createChooser`, hoạt động ngay).
+- Divider + **"MORE INFO" placeholder** cho cast + recommendations (Sprint 11).
 
 ### Màn 3 — Search (Sprint 8)
 - `SearchView` trên toolbar (hoặc top bar).
@@ -189,8 +194,8 @@ mininetflix/
 | 3 | Poster Grid | ✅ | `MoviePosterAdapter` (`ListAdapter`+DiffUtil) + Glide trong ViewHolder + GridLayoutManager span 2 | — | Lưới poster hiện trên máy thật |
 | 4 | Loading/Error UI | ✅ | ProgressBar + icon `ic_connection_error` ẩn/hiện theo `status` | — | Test airplane mode → icon lỗi |
 | 5 | Detail Screen | ✅ | Navigation + SafeArgs + hero backdrop + scrim + meta row + OVERVIEW (Netflix-style) | — | Tap poster → màn Detail đầy đủ |
-| **6** | **Play Trailer + Git/Wireframe Kickoff** | ⏳ TIẾP THEO | `Video`/`VideoResponse` + `getMovieVideos(id)` + nút ▶ Play Trailer trên Detail + Intent mở YouTube | 🟢 **Open repo GitHub + first PR + wireframe** (mini-lesson 20–25 phút đầu sprint) | Repo GitHub có lịch sử commit + PR `feat: play trailer` được merge + ảnh wireframe trong PR |
-| 7 | **Netflix-style Home** | planned | Hero card + 4 hàng ngang (Popular/Top Rated/Now Playing/Upcoming) + dark theme + `async`/`awaitAll` 4 endpoint song song | **Code review tay-2** (đổi PR với bạn, ≥3 comment có ý nghĩa) | PR có ≥3 review comment + 1 commit `refactor:` xử lý comment |
+| **6** | **Play Trailer + Netflix Detail Polish + Git/Wireframe Kickoff** | ✅ done | **Trailer:** `Video`/`VideoResponse` + `getMovieVideos(id)` + nút ▶ Play Trailer + hero play overlay (1 listener cho 2 view) + `Intent.ACTION_VIEW` → YouTube. **Polish:** force-dark theme app-wide (Material3.Dark + Netflix palette) + 3 vector drawables + redesign `fragment_detail.xml` (hero + meta + chips + MORE INFO placeholder) + Share (`Intent.ACTION_SEND` + createChooser) + My List Toast placeholder. **Bài học workshop:** thử embedded YouTube player → embed bị studio chặn → revert về Intent. | 🟢 **Open repo + first PR + wireframe** (mini-lesson Git 20-25') + **design-from-reference** (vẽ wireframe Detail từ Netflix screenshots) | Repo GitHub có lịch sử commit + PR `feat: play trailer and Netflix-style detail polish` merge + ảnh wireframe + before/after screenshot |
+| 7 | **Netflix-style Home** | ✅ done | Hero card 280dp (backdrop + scrim + title overlay) + 4 hàng ngang scrolling (Popular/Top Rated/Now Playing/Upcoming) + 3 endpoint mới (`getTopRated`/`getNowPlaying`/`getUpcoming`) + **`async { … } / .await()` × 4** song song trong `viewModelScope` (~4× nhanh hơn tuần tự) + tái dùng `MoviePosterAdapter` (4 instance, 1 class) + `grid_view_item` dùng `ShapeableImageView` bo góc 8dp + `NestedScrollView` outer + status overlay sibling | **Pair code review** (≥3 review comment theo format 👀 Observation → ❓ Question → 💡 Suggestion) | PR có ≥3 review comment được giải quyết (sửa hoặc giải thích) + commit `refactor:` xử lý comment |
 | 8 | Search | planned | `search/movie` + SearchView + debounce 300ms + empty/loading/no-result states | **Wireframe-first**: Figma → PR description | PR có Figma link + GIF demo |
 | 9 | My List (Room) | planned | `FavoriteMovie` entity + DAO + AppDatabase + icon ❤ toggle trên Detail + màn My List | **GitHub Issues**: mở 2–3 issue/sprint, đóng bằng PR `Fixes #N` + viết **ADR** "vì sao Room" | 3 issue đóng + ADR `docs/adr/001-room-vs-prefs.md` |
 | 10 *(capstone)* | Release + Polish | optional | Dark mode toàn app + a11y (contentDescription) + signed APK + ProGuard | **Semver + CHANGELOG + README chuẩn recruiter** | APK ký số cài máy thật + tag `v1.0.0` + README có badges/screenshots |
@@ -395,6 +400,9 @@ viewModelScope.launch {
 - **`genre_ids`** chỉ là ID — bỏ qua hoặc dạy ở khóa nâng cao.
 - **Phiên bản thư viện** gom hết vào Version Catalog → dễ cập nhật mỗi kỳ.
 
+### Bài học workshop (kể cho SV ở Sprint 6, Chặng 5)
+- **Trailer trong app vs Intent:** đã thử library `pierfrancescosoffritti.androidyoutubeplayer` để phát trailer NGAY trong app, nhưng **phần lớn trailer chính thức (Marvel/Disney/Universal/…) bị chủ video tắt embed** (YouTube error 150/152). Embedded player flash 1s rồi biến → UX xấu. **Revert về `Intent.ACTION_VIEW` → YouTube app** (Sprint 6 baseline). **Bài học nghề:** khi consume content bên thứ 3, ràng buộc kinh doanh (embed disabled) là thật và không "bẻ" được. Đôi khi "thử cái đẹp, ship cái boring chạy được cho mọi người" là đúng.
+
 ---
 
 ## 12. Ánh xạ với bài Mars cũ (tham khảo nhanh)
@@ -427,4 +435,4 @@ Khác biệt lớn so với Mars: thêm **Netflix-style multi-row Home** (Sprint
 
 ---
 
-*Cập nhật lần cuối: 2026-05-25 — pedagogy shift sang "engineer-who-ships-products" + roadmap 10-sprint + gotchas AGP 9.*
+*Cập nhật lần cuối: 2026-05-27 — Sprint 7 ship xong (Netflix-style Home: 4 hàng async song song + hero + ShapeableImageView bo góc + Peer Code Review introduced); Sprint 6 ship xong (trailer + Netflix detail polish + force-dark theme); bài học workshop về embedded player; pedagogy shift sang "engineer-who-ships-products" + roadmap 10-sprint + gotchas AGP 9.*
